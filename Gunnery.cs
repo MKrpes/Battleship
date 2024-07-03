@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Battleship2
+namespace Battleship
 {
     public enum ShootingTactics
     {
@@ -34,7 +34,7 @@ namespace Battleship2
                 case HitResult.Sunken:
                     {
                         shootingTactics = ShootingTactics.Random;
-                        changeTargetSelector();
+                        if(shipLengths.Count!=0)changeTargetSelector();
                         return;
                     }
                 case HitResult.Hit:
@@ -43,7 +43,7 @@ namespace Battleship2
                         shootingTactics = shootingTactics == ShootingTactics.Random ?
                             shootingTactics = ShootingTactics.Surronding : shootingTactics = ShootingTactics.Inline;
 
-                        changeTargetSelector();
+                        if (shipLengths.Count != 0) changeTargetSelector();
                         return;
                     }
                 default:
@@ -65,16 +65,19 @@ namespace Battleship2
 
         private void MarkShipSunk()
         {
+            int shipLength= 0;
             shipSquares.Add(target);
             foreach (var square in shipSquares)
             {
                 square.changeState(SquareState.Sunk);
+                shipLength++;
             }
             var toEliminate = eliminator.ToEliminate(shipSquares, recordGrid.Rows, recordGrid.Columns);
             foreach (var square in toEliminate)
             {
                 recordGrid.GetSquare(square.row, square.col).changeState(SquareState.Sunk);
             }
+            shipLengths.Remove(shipLength);
             shipSquares.Clear();
         }
 
